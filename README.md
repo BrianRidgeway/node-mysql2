@@ -39,6 +39,7 @@ MySQL2 is mostly API compatible with [mysqljs][node-mysql] and supports majority
  - SSL and [Authentication Switch](https://github.com/sidorares/node-mysql2/tree/master/documentation/Authentication-Switch.md)
  - [Custom Streams](https://github.com/sidorares/node-mysql2/tree/master/documentation/Extras.md)
  - [Pooling](#using-connection-pools)
+ - [SHA2 Authentication Plugins](#sha2-authentication-plugins)
 
 ## Installation
 
@@ -152,6 +153,54 @@ pool.getConnection(function(err, conn) {
    // Don't forget to release the connection when finished!
    pool.releaseConnection(conn);
 })
+```
+## SHA2 Authentication Plugins
+MySQL 8.0 ships with the `caching_sha2_password` authentication plugin as the default as hashing passwords with the sha1 algorithm is no longer secure. 
+
+Both the `caching_sha2_password` and `sha256_password` authentication plugins require a secure connection or the availability of server RSA public keys.
+
+SSL example:
+```js
+  const mysql = require( 'mysql2' );
+  const fs = require( 'fs' );
+  let con = mysql.createConnection({
+    user: 'username',
+    password: 'super_secret',
+    host: 'localhost',
+    ssl: { ca: fs.readFileSync( 'my-ca.crt' ) }
+  });
+  ...
+```
+
+RSA example (accept the public key the server provides):
+```js
+
+  const mysql = require( 'mysql2' );
+    
+  let con = mysql.createConnection({
+    user: 'username',
+    password: 'super_secret',
+    host: 'localhost',
+    rsa: { getServerPublicKey: true }
+  });
+  ...
+```
+
+We already have the server's public key (preferred method).
+Public key can be 
+* provided by DBA, or 
+* running `show status like 'Rsa_public_key;` and/or `show status like 'Caching_sha2_password_rsa_public_key;` 
+```js
+  const mysql = require( 'mysql2' );
+  const fs = require( 'fs' );
+  
+  let con = mysql.createConnection({
+    user: 'username',
+    password: 'super_secret',
+    host: 'localhost',
+    rsa: { serverPublicKey: fs.readFileSync('public-key.pem' }
+  });
+  ...
 ```
 
 ## Using Promise Wrapper
