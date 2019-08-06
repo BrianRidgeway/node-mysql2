@@ -167,7 +167,8 @@ SSL example:
     user: 'username',
     password: 'super_secret',
     host: 'localhost',
-    ssl: { ca: fs.readFileSync( 'my-ca.crt' ) }
+    ssl: { ca: fs.readFileSync( 'my-ca.crt' ) },
+    flags: 'PLUGIN_AUTH'
   });
   ...
 ```
@@ -181,7 +182,8 @@ RSA example (accept the public key the server provides):
     user: 'username',
     password: 'super_secret',
     host: 'localhost',
-    rsa: { getServerPublicKey: true }
+    rsa: { getServerPublicKey: true },
+    flags: 'PLUGIN_AUTH'
   });
   ...
 ```
@@ -198,7 +200,8 @@ Public key can be
     user: 'username',
     password: 'super_secret',
     host: 'localhost',
-    rsa: { serverPublicKey: fs.readFileSync('public-key.pem' }
+    rsa: { serverPublicKey: fs.readFileSync('public-key.pem' },
+    flags: 'PLUGIN_AUTH'
   });
   ...
 ```
